@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: base10-backend  
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: base10-backend 
+  template:
+    metadata:
+      labels:
+        app: base10-backend
+    spec:
+      containers:
+      - name: backend
+        image: base10-app:1.0  
+        command: ["node", "server.js"]
+        ports:
+        - containerPort: 3000
+        env:
+        - name: INSTANCE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: app-data-pvc

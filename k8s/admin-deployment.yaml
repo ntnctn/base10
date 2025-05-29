@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      containers:
+      - name: admin
+        image: base10-app:1.0
+        command: ["node", "admin.js"]
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATA_PATH
+          value: /app/products.json
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: app-data-pvc
